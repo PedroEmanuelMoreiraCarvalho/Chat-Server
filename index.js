@@ -9,6 +9,10 @@ const io = require('socket.io')(server,{
   }}
 );
 
+app.get("/",(req,res)=>{
+  res.send("Server Chat Workind!!")
+});
+
 const messages = []
 
 io.on('connection', (socket) => {
