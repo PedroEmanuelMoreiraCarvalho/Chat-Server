@@ -13,12 +13,9 @@ app.get("/",(req,res)=>{
   res.send("Server Chat Workind!!")
 });
 
-const messages = []
-
 io.on('connection', (socket) => {
   console.log("usuario conectado",socket.id);
   socket.on('message', (data) => {
-    messages.push(data)
     io.emit('updateMessages', data)
   });
 });
