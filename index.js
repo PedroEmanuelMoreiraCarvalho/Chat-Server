@@ -22,4 +22,5 @@ io.on('connection', (socket) => {
     io.emit('updateMessages', data)
   });
 });
+
 server.listen(port);
