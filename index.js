@@ -13,6 +13,7 @@ const io = require('socket.io')(server,{
   parser
 });
 
+var connections = -5
 var messages = []
 
 setInterval(()=>{
@@ -20,10 +21,20 @@ setInterval(()=>{
 },1800000)
 
 io.on('connection', (socket) => {
-  console.log("usuario conectado",socket.id);
+  connections++
+  console.log("conectado")
+  io.emit("updateOnlineUsers", connections)
+  io.emit("updateMessages", messages)
+
   socket.on("message", (data) => {
-    io.emit('updateMessages', messages)
+    messages.push(data)
+    io.emit("updateMessages", messages)
   });
+
+  socket.on("disconnect",()=>{
+    connections--
+    io.emit("updateOnlineUsers", connections)
+  })
 });
 
 
