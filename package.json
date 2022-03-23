@@ -12,8 +12,15 @@
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
+    "eiows": "^4.0.1",
     "express": "^4.17.3",
     "nodemon": "^2.0.15",
-    "socket.io": "^4.4.1"
+    "socket.io": "^4.4.1",
+    "socket.io-msgpack-parser": "^3.0.1",
+    "ws": "^8.5.0"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.6",
+    "utf-8-validate": "^5.0.9"
   }
 }
