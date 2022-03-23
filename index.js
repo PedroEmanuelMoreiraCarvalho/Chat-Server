@@ -13,7 +13,7 @@ const io = require('socket.io')(server,{
   parser
 });
 
-var connections = -5
+var connections = -1
 var messages = []
 
 setInterval(()=>{
