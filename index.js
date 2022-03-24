@@ -25,7 +25,7 @@ io.on('connection', (socket) => {
   const begin = messages.length
   socket.begin = begin
   var user_name = ""
-  io.emit("updateOnlineUsers", connections.length)
+  io.emit("updateOnlineUsers", connections.length-1)
   connections.forEach((socket)=>{
     io.to(socket.id).emit("updateMessages", messages.slice(socket.begin))
   })
@@ -44,7 +44,7 @@ io.on('connection', (socket) => {
     connections.forEach((socket)=>{
       io.to(socket.id).emit("updateMessages", messages.slice(socket.begin))
     })
-    io.emit("updateOnlineUsers", connections.length)
+    io.emit("updateOnlineUsers", connections.length-1)
   })
 });
 
