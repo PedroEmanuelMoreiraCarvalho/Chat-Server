@@ -14,7 +14,7 @@ const io = require('socket.io')(server,{
 });
 
 var connections = []
-var users_online = -2
+var users_online = -1
 
 io.on('connection', (socket) => {
   connections.push(socket)
