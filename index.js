@@ -14,43 +14,35 @@ const io = require('socket.io')(server,{
 });
 
 var connections = []
-var messages = []
-
-setInterval(()=>{
-  messages = []
-  connections.forEach((socket)=>{
-    socket.begin = 0
-  })
-  connections.forEach((socket)=>{
-    io.to(socket.id).emit("updateMessages", messages.slice(socket.begin))
-  })
-},1800000)
 
 io.on('connection', (socket) => {
   connections.push(socket)
-  const begin = messages.length
-  socket.begin = begin
+  socket.messages = []
   var user_name = ""
-  io.emit("updateOnlineUsers", connections.length-1)
+  io.emit("updateOnlineUsers", connections.length)
   connections.forEach((socket)=>{
-    io.to(socket.id).emit("updateMessages", messages.slice(socket.begin))
+    io.to(socket.id).emit("updateMessages", socket.messages)
   })
 
   socket.on("message", (data) => {
-    messages.push(data)
     user_name = data.user
     connections.forEach((socket)=>{
-      io.to(socket.id).emit("updateMessages", messages.slice(socket.begin))
+      socket.messages.push(data)
+    })
+    connections.forEach((socket)=>{
+      io.to(socket.id).emit("updateMessages", socket.messages)
     })
   });
 
   socket.on("disconnect",()=>{
-    connections.pop(socket)
-    messages.push({author: 1, user: "server", message: `${user_name} saiu do chat`})
+    connections.filter((socket_con)=>{return socket_con!=socket})
     connections.forEach((socket)=>{
-      io.to(socket.id).emit("updateMessages", messages.slice(socket.begin))
+      socket.messages.push({author: 1, user: "server", message: `${user_name} saiu do chat`})
     })
-    io.emit("updateOnlineUsers", connections.length-1)
+    connections.forEach((socket)=>{
+      io.to(socket.id).emit("updateMessages", socket.messages)
+    })
+    io.emit("updateOnlineUsers", connections.length)
   })
 });
 
