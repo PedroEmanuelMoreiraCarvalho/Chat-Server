@@ -13,7 +13,7 @@ const io = require('socket.io')(server,{
   parser
 });
 
-var connections = -1
+var connections = []
 var messages = []
 
 setInterval(()=>{
@@ -21,19 +21,30 @@ setInterval(()=>{
 },1800000)
 
 io.on('connection', (socket) => {
-  connections++
-  console.log("conectado")
-  io.emit("updateOnlineUsers", connections)
-  io.emit("updateMessages", messages)
+  connections.push(socket)
+  const begin = messages.length
+  socket.begin = begin
+  var user_name = ""
+  io.emit("updateOnlineUsers", connections.length)
+  connections.forEach((socket)=>{
+    io.to(socket.id).emit("updateMessages", messages.slice(socket.begin))
+  })
 
   socket.on("message", (data) => {
     messages.push(data)
-    io.emit("updateMessages", messages)
+    user_name = data.user
+    connections.forEach((socket)=>{
+      io.to(socket.id).emit("updateMessages", messages.slice(socket.begin))
+    })
   });
 
   socket.on("disconnect",()=>{
-    connections--
-    io.emit("updateOnlineUsers", connections)
+    connections.pop(socket)
+    messages.push({author: 1, user: "server", message: `${user_name} saiu do chat`})
+    connections.forEach((socket)=>{
+      io.to(socket.id).emit("updateMessages", messages.slice(socket.begin))
+    })
+    io.emit("updateOnlineUsers", connections.length)
   })
 });
 
