@@ -39,7 +39,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on("disconnect",()=>{
-    connections.pop(socket)
+    connections.filter((socket_con)=>{return socket_con!=socket})
     messages.push({author: 1, user: "server", message: `${user_name} saiu do chat`})
     connections.forEach((socket)=>{
       io.to(socket.id).emit("updateMessages", messages.slice(socket.begin))
