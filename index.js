@@ -51,13 +51,13 @@ io.on('connection', (socket) => {
 
   socket.on("disconnect",()=>{
     users_online--
-    connections.filter((socket_con)=>{return socket_con!=socket})
     connections.forEach((socket)=>{
       socket.messages.push({author: 1, user: "server", message: `${socket.user_name} saiu do chat`})
     })
     connections.forEach((socket)=>{
       io.to(socket.id).emit("updateMessages", socket.messages)
     })
+    connections.filter((socket_con)=>{return socket_con!=socket})
     io.emit("updateOnlineUsers", users_online)
   })
 });
