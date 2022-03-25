@@ -51,8 +51,8 @@ io.on('connection', (socket) => {
 
   socket.on("disconnect",()=>{
     users_online--
-    connections.forEach((socket)=>{
-      socket.messages.push({author: 1, user: "server", message: `${socket.user_name} saiu do chat`})
+    connections.forEach((_socket)=>{
+      _socket.messages.push({author: 1, user: "server", message: `${socket.user_name} saiu do chat`})
     })
     connections.forEach((socket)=>{
       io.to(socket.id).emit("updateMessages", socket.messages)
