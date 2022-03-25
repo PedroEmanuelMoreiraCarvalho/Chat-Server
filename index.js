@@ -20,14 +20,19 @@ io.on('connection', (socket) => {
   connections.push(socket)
   users_online++
   socket.messages = []
-  var user_name = ""
+  socket.user_name = "Alguém"
+  connections.forEach((_socket)=>{
+    if(_socket!=socket)
+    _socket.messages.push({author: 1, user: "server", message: `${socket.user_name} entrou no chat`})
+  })
   io.emit("updateOnlineUsers", users_online)
-  connections.forEach((socket)=>{
-    io.to(socket.id).emit("updateMessages", socket.messages)
+  connections.forEach((_socket)=>{
+    if(_socket!=socket)
+    io.to(_socket.id).emit("updateMessages", _socket.messages)
   })
 
   socket.on("message", (data) => {
-    user_name = data.user
+    socket.user_name = data.user
     connections.forEach((socket)=>{
       socket.messages.push(data)
     })
@@ -36,11 +41,19 @@ io.on('connection', (socket) => {
     })
   });
 
+  socket.on("typing",()=>{
+    usertyping = socket.user_name
+    connections.forEach((_socket)=>{
+      if(_socket!=socket)
+      io.to(_socket.id).emit("someoneTyping",{user: usertyping})
+    })
+  });
+
   socket.on("disconnect",()=>{
     users_online--
     connections.filter((socket_con)=>{return socket_con!=socket})
     connections.forEach((socket)=>{
-      socket.messages.push({author: 1, user: "server", message: `${user_name} saiu do chat`})
+      socket.messages.push({author: 1, user: "server", message: `${socket.user_name} saiu do chat`})
     })
     connections.forEach((socket)=>{
       io.to(socket.id).emit("updateMessages", socket.messages)
